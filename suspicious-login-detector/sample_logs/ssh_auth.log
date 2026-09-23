@@ -1,0 +1,26 @@
+Sep  3 09:58:01 webserver01 sshd[2100]: Accepted password for deploy from 10.0.0.5 port 22 ssh2
+Sep  3 09:58:01 webserver01 sshd[2100]: pam_unix(sshd:session): session opened for user deploy by (uid=0)
+Sep  3 10:00:00 webserver01 sshd[2211]: Failed password for invalid user admin from 203.0.113.45 port 51500 ssh2
+Sep  3 10:00:20 webserver01 sshd[2213]: Failed password for invalid user admin from 203.0.113.45 port 51501 ssh2
+Sep  3 10:00:45 webserver01 sshd[2215]: Failed password for root from 203.0.113.45 port 51502 ssh2
+Sep  3 10:01:10 webserver01 sshd[2217]: Failed password for root from 203.0.113.45 port 51503 ssh2
+Sep  3 10:01:40 webserver01 sshd[2219]: Failed password for invalid user test from 203.0.113.45 port 51504 ssh2
+Sep  3 10:02:05 webserver01 sshd[2221]: Failed password for invalid user oracle from 203.0.113.45 port 51505 ssh2
+Sep  3 10:02:30 webserver01 sshd[2223]: Failed password for root from 203.0.113.45 port 51506 ssh2
+Sep  3 10:15:00 webserver01 sshd[2240]: Failed password for user1 from 198.51.100.9 port 52011 ssh2
+Sep  3 10:16:30 webserver01 sshd[2242]: Failed password for user1 from 198.51.100.9 port 52012 ssh2
+Sep  3 10:18:10 webserver01 sshd[2244]: Failed password for user1 from 198.51.100.9 port 52013 ssh2
+Sep  3 10:19:45 webserver01 sshd[2246]: Failed password for user1 from 198.51.100.9 port 52014 ssh2
+Sep  3 10:30:00 webserver01 sshd[2260]: Failed password for invalid user backup from 192.0.2.77 port 53021 ssh2
+Sep  3 10:42:00 webserver01 sshd[2262]: Failed password for invalid user backup from 192.0.2.77 port 53022 ssh2
+Sep  3 10:54:00 webserver01 sshd[2264]: Failed password for invalid user backup from 192.0.2.77 port 53023 ssh2
+Sep  3 11:06:00 webserver01 sshd[2266]: Failed password for invalid user backup from 192.0.2.77 port 53024 ssh2
+Sep  3 11:18:00 webserver01 sshd[2268]: Failed password for invalid user backup from 192.0.2.77 port 53025 ssh2
+Sep  3 11:30:00 webserver01 sshd[2270]: Failed password for invalid user backup from 192.0.2.77 port 53026 ssh2
+Sep  3 11:05:10 webserver01 sudo: pam_unix(sudo:auth): authentication failure; logname=bob uid=1000 euid=0 tty=/dev/pts/1 ruser=bob rhost=  user=bob
+Sep  3 11:10:22 webserver01 sshd[3311]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=172.16.5.20 user=carol
+Sep  3 11:11:05 webserver01 sshd[3313]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=172.16.5.20 user=carol
+Sep  3 11:11:50 webserver01 sshd[3315]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=172.16.5.20 user=carol
+Sep  3 11:45:00 webserver01 sshd[3400]: Accepted password for deploy from 10.0.0.5 port 22 ssh2
+Sep  3 11:45:00 webserver01 sshd[3400]: pam_unix(sshd:session): session opened for user deploy by (uid=0)
+Sep  3 12:00:00 webserver01 CRON[3500]: pam_unix(cron:session): session opened for user root by (uid=0)

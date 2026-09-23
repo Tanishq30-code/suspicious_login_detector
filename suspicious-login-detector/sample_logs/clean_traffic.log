@@ -1,0 +1,8 @@
+Sep  3 08:00:00 webserver01 sshd[1001]: Accepted password for deploy from 10.0.0.5 port 22 ssh2
+Sep  3 08:00:00 webserver01 sshd[1001]: pam_unix(sshd:session): session opened for user deploy by (uid=0)
+Sep  3 08:30:00 webserver01 sshd[1050]: Accepted publickey for alice from 10.0.0.9 port 22 ssh2
+Sep  3 08:30:00 webserver01 sshd[1050]: pam_unix(sshd:session): session opened for user alice by (uid=0)
+Sep  3 09:00:00 webserver01 CRON[1100]: pam_unix(cron:session): session opened for user root by (uid=0)
+Sep  3 09:00:00 webserver01 CRON[1100]: pam_unix(cron:session): session closed for user root
+Sep  3 09:30:00 webserver01 sshd[1200]: Accepted password for deploy from 10.0.0.5 port 22 ssh2
+Sep  3 10:00:00 webserver01 sshd[1200]: pam_unix(sshd:session): session closed for user deploy

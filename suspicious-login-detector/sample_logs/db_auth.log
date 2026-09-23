@@ -1,0 +1,13 @@
+2026-09-03T09:59:00.000001Z 11 [Note] mysqld: Connection accepted for 'appuser'@'10.0.0.5'
+2026-09-03T10:20:00.000001Z 20 [Warning] mysqld: Access denied for user 'root'@'198.51.100.77' (using password: YES)
+2026-09-03T10:20:20.000001Z 21 [Warning] mysqld: Access denied for user 'root'@'198.51.100.77' (using password: YES)
+2026-09-03T10:20:40.000001Z 22 [Warning] mysqld: Access denied for user 'root'@'198.51.100.77' (using password: YES)
+2026-09-03T10:21:00.000001Z 23 [Warning] mysqld: Access denied for user 'root'@'198.51.100.77' (using password: YES)
+2026-09-03T10:21:20.000001Z 24 [Warning] mysqld: Access denied for user 'root'@'198.51.100.77' (using password: YES)
+2026-09-03T10:21:40.000001Z 25 [Warning] mysqld: Access denied for user 'root'@'198.51.100.77' (using password: YES)
+2026-09-03T10:22:00.000001Z 26 [Warning] mysqld: Access denied for user 'root'@'198.51.100.77' (using password: YES)
+2026-09-03T10:22:20.000001Z 27 [Warning] mysqld: Access denied for user 'root'@'198.51.100.77' (using password: YES)
+2026-09-03T10:22:40.000001Z 28 [Warning] mysqld: Access denied for user 'root'@'198.51.100.77' (using password: YES)
+2026-09-03T10:23:00.000001Z 29 [Warning] mysqld: Access denied for user 'root'@'198.51.100.77' (using password: YES)
+2026-09-03T10:23:20.000001Z 30 [Warning] mysqld: Access denied for user 'root'@'198.51.100.77' (using password: YES)
+2026-09-03T12:00:00.000001Z 40 [Note] mysqld: Connection accepted for 'appuser'@'10.0.0.5'
