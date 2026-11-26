@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suspicious Login Detector — Usage Guide (v2.0)</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2328; --muted:#5b6470;
+    --border:#e2e5e9; --accent:#8a4fff; --accent-ink:#4a1d96;
+    --code-bg:#1e1e2e; --code-ink:#e6e6f0; --ok:#1a7f37; --warn:#9a5b00; --bad:#c0392b;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;
+  }
+  .wrap{max-width:880px; margin:0 auto; padding:40px 24px 80px}
+  header{margin-bottom:36px}
+  header .eyebrow{
+    display:inline-block; font-size:12.5px; font-weight:700; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--accent-ink); background:#f1e9ff;
+    padding:4px 10px; border-radius:999px; margin-bottom:14px;
+  }
+  h1{font-size:30px; margin:0 0 8px; letter-spacing:-0.01em}
+  header p.sub{color:var(--muted); font-size:16px; margin:0}
+  h2{
+    font-size:20px; margin:44px 0 14px; padding-bottom:8px;
+    border-bottom:1px solid var(--border);
+  }
+  h2 .num{color:var(--accent-ink); margin-right:8px}
+  h3{font-size:16px; margin:24px 0 8px}
+  p{margin:0 0 14px}
+  ul,ol{margin:0 0 14px; padding-left:22px}
+  li{margin-bottom:6px}
+  code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    background:#eee9fb; color:var(--accent-ink); padding:1px 6px; border-radius:4px;
+    font-size:.92em;
+  }
+  pre{
+    background:var(--code-bg); color:var(--code-ink); padding:16px 18px;
+    border-radius:10px; overflow-x:auto; font-size:13.5px; margin:0 0 16px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  pre code{background:none; color:inherit; padding:0; font-size:1em}
+  .panel{
+    background:var(--panel); border:1px solid var(--border); border-radius:12px;
+    padding:20px 24px; margin-bottom:16px;
+  }
+  .steps{counter-reset:step}
+  .step{
+    position:relative; padding-left:44px; margin-bottom:22px;
+  }
+  .step::before{
+    counter-increment:step; content:counter(step);
+    position:absolute; left:0; top:0; width:30px; height:30px;
+    background:var(--accent); color:#fff; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:14px;
+  }
+  .step h3{margin:2px 0 8px}
+  table{width:100%; border-collapse:collapse; margin-bottom:16px; font-size:14px}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--border); vertical-align:top}
+  th{color:var(--muted); font-weight:600; font-size:12.5px; text-transform:uppercase; letter-spacing:.03em}
+  tr:last-child td{border-bottom:none}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:640px){ .grid{grid-template-columns:1fr} }
+  .badge{
+    display:inline-block; font-size:12px; font-weight:700; padding:2px 9px;
+    border-radius:6px; margin-right:6px;
+  }
+  .badge.ok{background:#e7f6ec; color:var(--ok)}
+  .badge.warn{background:#fdf0dc; color:var(--warn)}
+  .badge.bad{background:#fbe9e7; color:var(--bad)}
+  .note{
+    border-left:3px solid var(--accent); background:#f6f2ff; padding:12px 16px;
+    border-radius:0 8px 8px 0; margin:0 0 16px; font-size:14.5px;
+  }
+  .note.warn{border-color:#d99a2b; background:#fdf6e8}
+  .filetree{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13.5px}
+  footer{margin-top:56px; padding-top:20px; border-top:1px solid var(--border); color:var(--muted); font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow">Linux &amp; Shell Programming · CSET-213</span>
+    <h1>Suspicious Login Detector <span style="color:var(--muted); font-weight:400">v2.0</span></h1>
+    <p class="sub">A dependency-free bash/awk tool that correlates failed logins across multiple application
+    types (SSH, web app, database, API gateway), flags brute-force patterns, generates firewall block
+    commands, walks flagged IPs through a recovery workflow, and proves its own accuracy with a bundled
+    benchmark suite.</p>
+  </header>
+
+  <h2><span class="num">1</span>What's new in v2.0</h2>
+  <p>
+    v1.0 scanned a single SSH auth log. v2.0 adds four capabilities, each addressing a specific piece of
+    reviewer feedback on the original design:
+  </p>
+  <div class="grid">
+    <div class="panel">
+      <h3 style="margin-top:0">🎯 Benchmark / proof mode</h3>
+      <p style="margin-bottom:0"><code>-b</code> re-runs the detector against three bundled,
+      ground-truth-tagged scenarios and prints a detected-vs-expected pass/fail table — objective proof of
+      detection accuracy, not just a demo run.</p>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0">🧩 Multi-application log sources</h3>
+      <p style="margin-bottom:0">The tool now parses four independent application log formats — SSH, a web
+      app, a database, and an API gateway — and correlates the <em>same</em> attacking IP across all of them.</p>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0">🚫 Block that IP</h3>
+      <p style="margin-bottom:0"><code>-B</code> generates ready-to-review <code>iptables</code>/<code>ufw</code>
+      block commands for every flagged IP and records them in a persistent blocklist.</p>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0">♻️ Recovery actions</h3>
+      <p style="margin-bottom:0">Every flagged IP gets a recovery checklist in the report, and <code>-r</code>
+      reviews the blocklist after a cooldown period and generates the matching unblock commands.</p>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h3 style="margin-top:0">Project files</h3>
+      <div class="filetree">
+suspicious-login-detector/<br>
+├── suspicious_login_detector.sh &nbsp;<span style="color:var(--muted)"># main script</span><br>
+├── sample_logs/<br>
+│&nbsp;&nbsp;&nbsp;├── ssh_auth.log &nbsp;<span style="color:var(--muted)"># SSH/syslog demo data</span><br>
+│&nbsp;&nbsp;&nbsp;├── web_auth.log &nbsp;<span style="color:var(--muted)"># web app login demo data</span><br>
+│&nbsp;&nbsp;&nbsp;├── db_auth.log &nbsp;<span style="color:var(--muted)"># database auth demo data</span><br>
+│&nbsp;&nbsp;&nbsp;├── api_auth.log &nbsp;<span style="color:var(--muted)"># API gateway demo data</span><br>
+│&nbsp;&nbsp;&nbsp;├── clean_traffic.log &nbsp;<span style="color:var(--muted)"># benign-only, zero false positives</span><br>
+│&nbsp;&nbsp;&nbsp;└── *.expected / expected_combined.txt &nbsp;<span style="color:var(--muted)"># benchmark ground truth</span><br>
+├── reports/ &nbsp;<span style="color:var(--muted)"># generated .txt / .csv / benchmark / block / unblock output</span><br>
+├── blocklist.tsv &nbsp;<span style="color:var(--muted)"># persistent block state (created on first -B run)</span><br>
+└── guide.html &nbsp;<span style="color:var(--muted)"># this file</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0">Requirements</h3>
+      <ul style="margin-bottom:0">
+        <li>Any Linux distribution with <code>bash</code></li>
+        <li><code>gawk</code> (GNU awk) — used for <code>mktime()</code>/<code>strftime()</code>/<code>match()</code></li>
+        <li>Standard coreutils: <code>date</code>, <code>mkdir</code>, <code>mktemp</code></li>
+        <li><em>Optional:</em> <code>mailx</code>/<code>sendmail</code> for email alerts, <code>iptables</code>/<code>ufw</code> to actually apply generated blocks</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    All files for this project live entirely under <code>~/Downloads/personal/suspicious-login-detector/</code>
+    on this machine. Nothing here connects to, reuses, or depends on any other project or client work — it
+    is self-contained and reads only the log paths you explicitly give it (or the bundled demo logs).
+  </div>
+
+  <div class="note warn">
+    <strong>Block commands are never auto-executed.</strong> <code>-B</code> only writes a reviewable
+    <code>block_commands_*.sh</code> script and a blocklist entry. The actual <code>iptables</code>/<code>ufw</code>
+    command only runs if you additionally pass <code>-x</code> <em>and</em> the script is running as root —
+    review the generated script first, every time.
+  </div>
+
+  <h2><span class="num">2</span>Step-by-step: run the demo</h2>
+  <div class="steps">
+
+    <div class="step">
+      <h3>Open a terminal in the project folder</h3>
+      <pre><code>cd ~/Downloads/personal/suspicious-login-detector</code></pre>
+    </div>
+
+    <div class="step">
+      <h3>Make the script executable (first time only)</h3>
+      <pre><code>chmod +x suspicious_login_detector.sh</code></pre>
+    </div>
+
+    <div class="step">
+      <h3>Run it with zero flags — the four bundled application sources</h3>
+      <pre><code>./suspicious_login_detector.sh</code></pre>
+      <p>With no <code>-a</code>/<code>-f</code> given, it automatically loads all four demo sources
+      (<code>ssh</code>, <code>web</code>, <code>db</code>, <code>api</code>) and correlates them by IP.</p>
+    </div>
+
+    <div class="step">
+      <h3>Read the summary</h3>
+      <p>The same attacker IP (<code>203.0.113.45</code>) is seen hitting SSH, the web app, and the API
+      gateway — three different applications — so it's escalated to <strong>CRITICAL</strong> even though no
+      single source alone would look that severe. A separate IP brute-forcing only the database is
+      correctly flagged <strong>HIGH</strong> on attempt volume alone:</p>
+      <pre><code>Flagged suspicious IPs   : 2
+---------------------------------------------------------------------
+IP               Attempts  AppsHit   Applications       Username(s)               Severity
+198.51.100.77    11        1         db                 root                      HIGH
+203.0.113.45     12        3         ssh;web;api        admin;root;test;oracle    CRITICAL
+---------------------------------------------------------------------
+Recovery Actions (per flagged IP):
+
+  IP 203.0.113.45  (severity: CRITICAL)
+    [ ] Block this IP at the perimeter firewall (run with -B to generate commands)
+    [ ] Force logout / invalidate active sessions for: admin;root;test;oracle
+    [ ] Require a password reset for the targeted account(s) above
+    [ ] Review recent SUCCESSFUL logins from 203.0.113.45 for signs of prior compromise
+    [ ] Keep the block in place for 24h, then re-review with -r (recovery mode)</code></pre>
+    </div>
+
+    <div class="step">
+      <h3>Generate block commands for the flagged IPs</h3>
+      <pre><code>./suspicious_login_detector.sh -B</code></pre>
+      <p>Writes <code>reports/block_commands_&lt;timestamp&gt;.sh</code> (commented <code>iptables</code> +
+      <code>ufw</code> commands, one per flagged IP) and adds each IP to <code>blocklist.tsv</code> with
+      status <code>active</code>. Review the script, then run it yourself when ready.</p>
+    </div>
+
+    <div class="step">
+      <h3>Later: review the blocklist and unblock what's past cooldown</h3>
+      <pre><code>./suspicious_login_detector.sh -r -c 24</code></pre>
+      <p>Checks every <code>active</code> entry in <code>blocklist.tsv</code>; anything blocked more than
+      24h ago gets an unblock command in <code>reports/unblock_commands_&lt;timestamp&gt;.sh</code> plus a
+      recovery checklist (confirm no further attempts, rotate credentials, keep monitoring), and its status
+      flips to <code>recovered</code>. Anything still inside the cooldown is left <code>active</code>.</p>
+    </div>
+
+    <div class="step">
+      <h3>Prove it works: run the benchmark suite</h3>
+      <pre><code>./suspicious_login_detector.sh -b</code></pre>
+      <p>Runs three controlled scenarios — the combined multi-app demo, SSH in isolation, and a
+      clean-traffic-only log — against bundled ground truth, and writes
+      <code>reports/benchmark_&lt;timestamp&gt;.txt</code> showing PASS/FAIL per scenario plus timing. This
+      is the accuracy "proof" referenced in the project write-up.</p>
+    </div>
+
+  </div>
+
+  <h2><span class="num">3</span>Command-line options</h2>
+  <table>
+    <tr><th>Flag</th><th>Meaning</th><th>Default</th></tr>
+    <tr><td><code>-a TYPE:FILE</code></td><td>Add a log source; <code>TYPE</code> is <code>ssh</code>, <code>web</code>, <code>db</code>, or <code>api</code>. Repeatable.</td><td>bundled 4-source demo set</td></tr>
+    <tr><td><code>-f FILE</code></td><td>Shorthand for <code>-a ssh:FILE</code> (v1.0 back-compat)</td><td>—</td></tr>
+    <tr><td><code>-t N</code></td><td>Flag an IP once it exceeds N attempts in the window</td><td><code>5</code></td></tr>
+    <tr><td><code>-w N</code></td><td>Sliding window size, in minutes</td><td><code>10</code></td></tr>
+    <tr><td><code>-o DIR</code></td><td>Output directory for reports</td><td><code>./reports</code></td></tr>
+    <tr><td><code>-m EMAIL</code></td><td>Email the report if any IP was flagged (needs <code>mailx</code>/<code>sendmail</code>)</td><td>off</td></tr>
+    <tr><td><code>-B</code></td><td>Generate firewall block commands + blocklist entry for every flagged IP</td><td>off</td></tr>
+    <tr><td><code>-x</code></td><td>Actually execute the generated block commands (needs <code>-B</code> + root)</td><td>off</td></tr>
+    <tr><td><code>-L FILE</code></td><td>Blocklist state file</td><td><code>./blocklist.tsv</code></td></tr>
+    <tr><td><code>-r</code></td><td>Recovery mode: review blocklist cooldowns, generate unblocks, exit</td><td>off</td></tr>
+    <tr><td><code>-c N</code></td><td>Recovery cooldown, in hours, before an IP is unblock-eligible</td><td><code>24</code></td></tr>
+    <tr><td><code>-b</code></td><td>Benchmark mode: run bundled scenarios, print proof report, exit</td><td>off</td></tr>
+    <tr><td><code>-q</code></td><td>Quiet mode — write report files but print nothing to the console</td><td>off</td></tr>
+    <tr><td><code>-h</code></td><td>Show help text</td><td>—</td></tr>
+  </table>
+
+  <h3>More examples</h3>
+  <pre><code># Point at real logs from three different applications at once
+./suspicious_login_detector.sh -a ssh:/var/log/auth.log -a web:/var/log/app/login.log -a db:/var/log/mysql/error.log
+
+# Stricter: flag after 3 attempts within a 5-minute window
+./suspicious_login_detector.sh -t 3 -w 5
+
+# Detect AND generate block commands, quiet for cron, only e-mail when flagged
+./suspicious_login_detector.sh -B -q -m you@example.com
+
+# Detect, actually apply the blocks (root), review the script that was run first
+sudo ./suspicious_login_detector.sh -B -x
+
+# Weekly cron: review the blocklist and lift anything past a 48h cooldown
+./suspicious_login_detector.sh -r -c 48</code></pre>
+
+  <h2><span class="num">4</span>Exit codes (useful for scripting/cron)</h2>
+  <table>
+    <tr><th>Code</th><th>Meaning</th></tr>
+    <tr><td><span class="badge ok">0</span></td><td>Ran successfully — nothing flagged, or all benchmark scenarios passed</td></tr>
+    <tr><td><span class="badge warn">1</span></td><td>Usage or input error (bad flag, missing/unreadable log file)</td></tr>
+    <tr><td><span class="badge bad">2</span></td><td>Ran successfully — one or more IPs were flagged, or a benchmark scenario failed</td></tr>
+  </table>
+
+  <h2><span class="num">5</span>How the detection logic works</h2>
+  <p>Each application source is parsed by a small dedicated matcher and normalized to a common
+  <code>epoch|ip|user|app</code> event, so the rest of the pipeline never needs to know which log format an
+  event came from:</p>
+  <table>
+    <tr><th>Type</th><th>Matches on</th><th>Example</th></tr>
+    <tr><td><code>ssh</code></td><td><code>Failed password</code> / PAM <code>authentication failure</code></td><td><code>sshd[…]: Failed password for root from 203.0.113.45 …</code></td></tr>
+    <tr><td><code>web</code></td><td><code>LOGIN_FAILED</code> with <code>ip=</code>/<code>user=</code> tokens</td><td><code>app[login]: LOGIN_FAILED ip=203.0.113.45 user=admin …</code></td></tr>
+    <tr><td><code>db</code></td><td><code>Access denied for user '…'@'…'</code></td><td><code>mysqld: Access denied for user 'root'@'198.51.100.77' …</code></td></tr>
+    <tr><td><code>api</code></td><td>JSON lines with <code>"event":"auth_failure"</code></td><td><code>{"event":"auth_failure","ip":"…","user":"…"}</code></td></tr>
+  </table>
+  <p>For each distinct IP <em>across all sources combined</em>, its failed-attempt timestamps are sorted and
+  the script slides a window across them: if any <em>(threshold&nbsp;+&nbsp;1)</em> consecutive attempts fall
+  within <em>window</em> seconds of each other, the IP is flagged. This distinguishes a genuine burst from
+  the same attempt count spread thinly over hours, which keeps false positives low — the bundled
+  <code>clean_traffic.log</code> benchmark scenario exists specifically to prove that.</p>
+  <p>Flagged IPs get a severity: <span class="badge warn">MEDIUM</span> at baseline,
+  <span class="badge bad">HIGH</span> if attempts reach 2× the threshold <em>or</em> the IP hit 2+
+  applications, and <span class="badge bad">CRITICAL</span> if it hit 3 or more distinct applications —
+  reflecting that the same source attacking multiple systems is materially more dangerous than one noisy
+  brute-forcer on a single service.</p>
+
+  <h2><span class="num">6</span>Response workflow: block → recover</h2>
+  <p>Detection, blocking, and recovery are deliberately separate steps so nothing destructive ever happens
+  automatically:</p>
+  <ol>
+    <li><strong>Detect</strong> — a normal run (optionally <code>-B</code>) identifies and reports flagged IPs; each gets a Recovery Actions checklist in the text report regardless of <code>-B</code>.</li>
+    <li><strong>Block (opt-in, reviewable)</strong> — <code>-B</code> writes <code>block_commands_*.sh</code> and a <code>blocklist.tsv</code> row (<code>ip</code>, first-blocked time, expiry, severity, <code>active</code>). Nothing is applied to the firewall unless you also pass <code>-x</code> as root.</li>
+    <li><strong>Recover</strong> — run <code>-r</code> periodically (e.g. daily via cron). Entries past the <code>-c</code> cooldown get an <code>unblock_commands_*.sh</code> script and flip to <code>recovered</code>; entries still cooling down are reported with hours remaining and left <code>active</code>.</li>
+  </ol>
+
+  <h2><span class="num">7</span>Benchmarking / proof of accuracy</h2>
+  <p><code>-b</code> exists to answer "how do we know this actually works?" with evidence rather than a
+  single demo run. It executes the full pipeline against three scenarios with known, hand-verified ground
+  truth (<code>sample_logs/*.expected</code> / <code>expected_combined.txt</code>) and reports a hard
+  PASS/FAIL per scenario:</p>
+  <table>
+    <tr><th>Scenario</th><th>What it proves</th></tr>
+    <tr><td><code>combined-default</code></td><td>Cross-application correlation is correct — the multi-app attacker is found and escalated, the single-app attacker is found at the right severity, and quiet IPs stay unflagged.</td></tr>
+    <tr><td><code>ssh-only</code></td><td>The core sliding-window algorithm alone: a real burst is caught, a slow drip of the same total attempts over an hour is correctly ignored.</td></tr>
+    <tr><td><code>clean-traffic</code></td><td>Zero false positives on entirely benign traffic (successful logins, cron, no failures at all).</td></tr>
+  </table>
+  <p>The report also records elapsed time and throughput (lines/sec) per scenario, so it doubles as a
+  lightweight performance benchmark alongside the accuracy proof.</p>
+
+  <h2><span class="num">8</span>Automating it with cron</h2>
+  <pre><code># crontab -e
+
+# Every 15 minutes: detect + generate block commands, email only when flagged
+*/15 * * * * /home/&lt;you&gt;/Downloads/personal/suspicious-login-detector/suspicious_login_detector.sh \
+  -B -q -m you@example.com \
+  -o /home/&lt;you&gt;/Downloads/personal/suspicious-login-detector/reports
+
+# Once a day: review the blocklist and lift anything past a 24h cooldown
+0 3 * * * /home/&lt;you&gt;/Downloads/personal/suspicious-login-detector/suspicious_login_detector.sh -r -c 24 -q</code></pre>
+  <div class="note warn">
+    Reading real system logs (<code>/var/log/auth.log</code>, database/webserver logs) and applying
+    <code>-x</code> block commands usually requires root. When scheduling via <code>root</code>'s crontab,
+    use absolute paths exactly as shown above, since cron jobs run with a minimal environment.
+  </div>
+
+  <h2><span class="num">9</span>Known limitations &amp; extension ideas</h2>
+  <ul>
+    <li><strong>IPv4 only</strong> — IPv6 source addresses are skipped by the validation regex.</li>
+    <li><strong>Timestamps assumed UTC</strong> — ISO-8601 timezone offsets (e.g. <code>+05:30</code>) are
+      currently ignored during parsing so events from different sources line up on one timeline; real
+      deployments spanning timezones should normalize logs to UTC before feeding them in.</li>
+    <li><strong>Four built-in application parsers</strong> — adding a fifth log format means adding one more
+      matcher block to <code>normalize.awk</code>; the rest of the pipeline (detection, severity, blocking,
+      recovery, benchmarking) is format-agnostic.</li>
+    <li><strong>Blocking is IP-only</strong> — it does not attempt to identify or lock the targeted user
+      accounts; that's intentionally left as a manual step in the Recovery Actions checklist.</li>
+    <li><strong>Alerting</strong> — currently email only; the CSV output is intentionally machine-parsable so
+      it can be piped into Slack/webhook alerting later without touching the core logic.</li>
+  </ul>
+
+  <h2><span class="num">10</span>Troubleshooting</h2>
+  <table>
+    <tr><th>Symptom</th><th>Likely cause / fix</th></tr>
+    <tr><td><code>Permission denied</code> running the script</td><td>Run <code>chmod +x suspicious_login_detector.sh</code> once.</td></tr>
+    <tr><td><code>cannot read log file</code></td><td>The path in <code>-a TYPE:FILE</code>/<code>-f</code> is wrong, or you need <code>sudo</code> to read system logs.</td></tr>
+    <tr><td><code>unknown source type</code></td><td><code>TYPE</code> in <code>-a TYPE:FILE</code> must be exactly <code>ssh</code>, <code>web</code>, <code>db</code>, or <code>api</code>.</td></tr>
+    <tr><td><code>-x requires -B</code></td><td>Pass both together: <code>-B -x</code>. <code>-x</code> alone has nothing to execute.</td></tr>
+    <tr><td>Block commands weren't actually applied</td><td>By design — without <code>-x</code> (and root), <code>-B</code> only writes the reviewable script. Run it yourself, or add <code>-x</code>.</td></tr>
+    <tr><td><code>this script requires GNU awk</code></td><td>Install gawk, e.g. <code>sudo apt install gawk</code> (Debian/Ubuntu) or <code>sudo yum install gawk</code> (RHEL/CentOS).</td></tr>
+    <tr><td>Everything shows as unflagged unexpectedly</td><td>Lower <code>-t</code> or widen <code>-w</code> — remember the rule is <em>more than</em> N attempts, so <code>-t 5</code> needs 6+ attempts.</td></tr>
+  </table>
+
+  <footer>
+    Suspicious Login Detector v2.0 — Bennett University, School of Computer Science Engineering &amp;
+    Technology. Linux &amp; Shell Programming (CSET-213), Academic Year 2025-26. All files local-only.
+  </footer>
+
+</div>
+</body>
+</html>
