@@ -1,0 +1,5 @@
+{"time":"2026-09-03T09:57:00Z","event":"auth_success","ip":"10.0.0.5","user":"deploy","service":"api-gateway"}
+{"time":"2026-09-03T10:06:00Z","event":"auth_failure","ip":"203.0.113.45","user":"admin","service":"api-gateway"}
+{"time":"2026-09-03T10:06:30Z","event":"auth_failure","ip":"203.0.113.45","user":"admin","service":"api-gateway"}
+{"time":"2026-09-03T11:00:00Z","event":"auth_failure","ip":"192.0.2.200","user":"svc-report","service":"api-gateway"}
+{"time":"2026-09-03T13:00:00Z","event":"auth_success","ip":"10.0.0.5","user":"deploy","service":"api-gateway"}

@@ -1,0 +1,9 @@
+2026-09-03T09:58:05+00:00 webapp01 app[login]: LOGIN_SUCCESS ip=10.0.0.5 user=deploy reason=none
+2026-09-03T10:05:00+00:00 webapp01 app[login]: LOGIN_FAILED ip=203.0.113.45 user=admin reason=invalid_password
+2026-09-03T10:05:20+00:00 webapp01 app[login]: LOGIN_FAILED ip=203.0.113.45 user=admin reason=invalid_password
+2026-09-03T10:05:40+00:00 webapp01 app[login]: LOGIN_FAILED ip=203.0.113.45 user=root reason=invalid_password
+2026-09-03T10:20:00+00:00 webapp01 app[login]: LOGIN_FAILED ip=198.51.100.201 user=finance reason=invalid_password
+2026-09-03T10:32:00+00:00 webapp01 app[login]: LOGIN_FAILED ip=198.51.100.201 user=finance reason=invalid_password
+2026-09-03T10:44:00+00:00 webapp01 app[login]: LOGIN_FAILED ip=198.51.100.201 user=finance reason=invalid_password
+2026-09-03T10:56:00+00:00 webapp01 app[login]: LOGIN_FAILED ip=198.51.100.201 user=finance reason=invalid_password
+2026-09-03T11:40:00+00:00 webapp01 app[login]: LOGIN_SUCCESS ip=10.0.0.5 user=deploy reason=none
